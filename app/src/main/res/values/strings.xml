@@ -1,3 +1,51 @@
 <resources>
     <string name="app_name">BookShelf</string>
+
+    <!-- Screen titles -->
+    <string name="my_books">My books</string>
+    <string name="book_details">Book details</string>
+    <string name="add_book">Add book</string>
+
+    <!-- Common actions -->
+    <string name="back">Back</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+
+    <!-- Book list -->
+    <string name="search_books">Search by title or author</string>
+    <string name="clear_search">Clear search</string>
+    <string name="filter_all">All</string>
+    <string name="empty_books_title">No books yet</string>
+    <string name="empty_books_message">Tap + to add your first book</string>
+    <string name="empty_search_title">Nothing found</string>
+    <string name="empty_search_message">Try another title, author or filter</string>
+
+    <!-- Reading status -->
+    <string name="status_want_to_read">Want to read</string>
+    <string name="status_reading">Reading</string>
+    <string name="status_finished">Finished</string>
+
+    <!-- Favorites -->
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+
+    <!-- Book details -->
+    <string name="by_author">by %1$s</string>
+    <string name="book_meta">%1$s · %2$d</string>
+    <string name="reading_status">Reading status</string>
+    <string name="about_book">About this book</string>
+    <string name="no_description">No description yet.</string>
+    <string name="book_not_found">Book not found</string>
+    <string name="delete_book">Delete book</string>
+    <string name="delete_book_question">Delete \"%1$s\" from your shelf?</string>
+
+    <!-- Add book form -->
+    <string name="field_title">Title</string>
+    <string name="field_author">Author</string>
+    <string name="field_genre">Genre</string>
+    <string name="field_year">Year</string>
+    <string name="field_description">Description</string>
+    <string name="error_required">This field is required</string>
+    <string name="error_year">Enter a year between 1000 and 2100</string>
 </resources>
