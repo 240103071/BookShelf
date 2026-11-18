@@ -221,4 +221,57 @@ class HomeViewModelTest {
             viewModel.uiState.value.genres
         )
     }
+
+    // --- Genre filter and clearFilters ---
+
+    @Test
+    fun genreFilter_showsOnlyBooksOfThatGenre() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+
+        viewModel.onGenreChange("Historical novel")
+
+        assertEquals("Historical novel", viewModel.uiState.value.selectedGenre)
+        assertEquals(setOf(1, 2), ids().toSet())
+    }
+
+    @Test
+    fun genreFilter_null_showsAllBooks() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+
+        viewModel.onGenreChange("Fable")
+        viewModel.onGenreChange(null)
+
+        assertEquals(6, ids().size)
+    }
+
+    @Test
+    fun genreFilter_isCombinedWithSearchAndStatus() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+
+        viewModel.onGenreChange("Historical novel")
+        viewModel.onStatusFilterChange(BookStatus.READING)
+        assertEquals(listOf(2), ids())
+
+        viewModel.onStatusFilterChange(null)
+        viewModel.onQueryChange("abai")
+        assertEquals(listOf(1), ids())
+    }
+
+    @Test
+    fun clearFilters_resetsQueryStatusAndGenre_butKeepsSort() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+        viewModel.onQueryChange("abai")
+        viewModel.onStatusFilterChange(BookStatus.FINISHED)
+        viewModel.onGenreChange("Historical novel")
+        viewModel.onSortChange(SortOption.TITLE)
+
+        viewModel.clearFilters()
+
+        val state = viewModel.uiState.value
+        assertEquals("", state.query)
+        assertNull(state.selectedStatus)
+        assertNull(state.selectedGenre)
+        assertEquals(SortOption.TITLE, state.selectedSort)
+        assertEquals(6, state.books.size)
+    }
 }

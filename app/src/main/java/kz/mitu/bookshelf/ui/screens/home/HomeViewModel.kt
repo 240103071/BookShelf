@@ -17,6 +17,7 @@ data class HomeUiState(
     val query: String = "",
     val selectedStatus: BookStatus? = null,
     val selectedSort: SortOption = SortOption.RECENTLY_ADDED,
+    val selectedGenre: String? = null,
     /** Distinct genres of all books (not only the filtered ones), A–Z. */
     val genres: List<String> = emptyList()
 )
@@ -26,26 +27,30 @@ class HomeViewModel : ViewModel() {
     private val query = MutableStateFlow("")
     private val selectedStatus = MutableStateFlow<BookStatus?>(null)
     private val selectedSort = MutableStateFlow(SortOption.RECENTLY_ADDED)
+    private val selectedGenre = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<HomeUiState> = combine(
         BookRepository.books,
         query,
         selectedStatus,
-        selectedSort
-    ) { books, query, status, sort ->
+        selectedSort,
+        selectedGenre
+    ) { books, query, status, sort, genre ->
         val trimmed = query.trim()
         val filtered = books.filter { book ->
             val matchesQuery = trimmed.isEmpty() ||
                 book.title.contains(trimmed, ignoreCase = true) ||
                 book.author.contains(trimmed, ignoreCase = true)
             val matchesStatus = status == null || book.status == status
-            matchesQuery && matchesStatus
+            val matchesGenre = genre == null || book.genre.trim().equals(genre.trim(), ignoreCase = true)
+            matchesQuery && matchesStatus && matchesGenre
         }
         HomeUiState(
             books = filtered.sortedWith(sort.comparator()),
             query = query,
             selectedStatus = status,
             selectedSort = sort,
+            selectedGenre = genre,
             genres = books.toGenres()
         )
     }.stateIn(
@@ -64,6 +69,17 @@ class HomeViewModel : ViewModel() {
 
     fun onSortChange(sort: SortOption) {
         selectedSort.value = sort
+    }
+
+    fun onGenreChange(genre: String?) {
+        selectedGenre.value = genre
+    }
+
+    /** Resets search, status and genre filters. The sort option is kept. */
+    fun clearFilters() {
+        query.value = ""
+        selectedStatus.value = null
+        selectedGenre.value = null
     }
 
     private fun List<Book>.toGenres(): List<String> =
