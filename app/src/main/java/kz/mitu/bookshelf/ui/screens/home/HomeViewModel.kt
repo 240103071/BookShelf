@@ -16,7 +16,9 @@ data class HomeUiState(
     val books: List<Book> = emptyList(),
     val query: String = "",
     val selectedStatus: BookStatus? = null,
-    val selectedSort: SortOption = SortOption.RECENTLY_ADDED
+    val selectedSort: SortOption = SortOption.RECENTLY_ADDED,
+    /** Distinct genres of all books (not only the filtered ones), A–Z. */
+    val genres: List<String> = emptyList()
 )
 
 class HomeViewModel : ViewModel() {
@@ -43,7 +45,8 @@ class HomeViewModel : ViewModel() {
             books = filtered.sortedWith(sort.comparator()),
             query = query,
             selectedStatus = status,
-            selectedSort = sort
+            selectedSort = sort,
+            genres = books.toGenres()
         )
     }.stateIn(
         scope = viewModelScope,
@@ -62,6 +65,12 @@ class HomeViewModel : ViewModel() {
     fun onSortChange(sort: SortOption) {
         selectedSort.value = sort
     }
+
+    private fun List<Book>.toGenres(): List<String> =
+        map { it.genre.trim() }
+            .filter { it.isNotEmpty() }
+            .distinct()
+            .sortedWith(String.CASE_INSENSITIVE_ORDER)
 
     private fun SortOption.comparator(): Comparator<Book> = when (this) {
         SortOption.TITLE -> compareBy(String.CASE_INSENSITIVE_ORDER) { it.title }

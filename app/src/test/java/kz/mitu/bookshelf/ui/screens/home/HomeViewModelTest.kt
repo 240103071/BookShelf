@@ -183,4 +183,42 @@ class HomeViewModelTest {
         // FINISHED only: 1984, The Little Prince, The Path of Abai
         assertEquals(listOf(4, 5, 1), ids())
     }
+
+    // --- Genres ---
+
+    @Test
+    fun genres_areDistinctAndSorted() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+
+        // "Historical novel" appears twice in the sample books but only once here
+        assertEquals(
+            listOf("Dystopia", "Fable", "Historical novel", "Philosophy", "Psychological novel"),
+            viewModel.uiState.value.genres
+        )
+    }
+
+    @Test
+    fun genres_includeAllBooks_notOnlyFiltered() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+
+        viewModel.onQueryChange("1984")
+        viewModel.onStatusFilterChange(BookStatus.FINISHED)
+
+        assertEquals(1, viewModel.uiState.value.books.size)
+        assertEquals(5, viewModel.uiState.value.genres.size)
+    }
+
+    @Test
+    fun genres_updateWhenRepositoryChanges_andSkipBlank() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+
+        BookRepository.addBook(newBook(title = "A").copy(genre = "Adventure"))
+        BookRepository.addBook(newBook(title = "B").copy(genre = "  "))
+        BookRepository.deleteBook(5) // the only "Fable"
+
+        assertEquals(
+            listOf("Adventure", "Dystopia", "Historical novel", "Philosophy", "Psychological novel"),
+            viewModel.uiState.value.genres
+        )
+    }
 }
