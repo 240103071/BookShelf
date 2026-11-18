@@ -1,16 +1,8 @@
 package kz.mitu.bookshelf.navigation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -19,13 +11,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import kz.mitu.bookshelf.R
 import kz.mitu.bookshelf.ui.screens.add.AddEditBookScreen
 import kz.mitu.bookshelf.ui.screens.add.AddEditBookViewModel
 import kz.mitu.bookshelf.ui.screens.detail.BookDetailScreen
 import kz.mitu.bookshelf.ui.screens.detail.DetailViewModel
 import kz.mitu.bookshelf.ui.screens.home.HomeScreen
 import kz.mitu.bookshelf.ui.screens.home.HomeViewModel
+import kz.mitu.bookshelf.ui.screens.stats.StatsScreen
+import kz.mitu.bookshelf.ui.screens.stats.StatsViewModel
 
 @Composable
 fun AppNavHost(
@@ -88,7 +81,16 @@ fun AppNavHost(
         }
 
         composable(Screen.Stats.route) {
-            PlaceholderScreen(title = stringResource(R.string.statistics))
+            val viewModel: StatsViewModel = viewModel()
+            val stats by viewModel.uiState.collectAsStateWithLifecycle()
+
+            StatsScreen(
+                totalBooks = stats.totalBooks,
+                countByStatus = stats.countByStatus,
+                pagesRead = stats.pagesRead,
+                averageRating = stats.averageRating,
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }
@@ -121,23 +123,4 @@ private fun AddEditDestination(onDone: () -> Unit) {
         onSaveClick = { if (viewModel.save()) onDone() },
         onBackClick = onDone
     )
-}
-
-/** Temporary screen used until the real screens are implemented. */
-@Composable
-private fun PlaceholderScreen(
-    title: String,
-    content: @Composable () -> Unit = {}
-) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = stringResource(R.string.placeholder_screen, title),
-            style = MaterialTheme.typography.titleLarge
-        )
-        content()
-    }
 }

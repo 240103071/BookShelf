@@ -8,11 +8,6 @@
     <string name="edit_book">Edit book</string>
     <string name="statistics">Statistics</string>
 
-    <!-- Navigation placeholders (temporary) -->
-    <string name="placeholder_screen">%1$s — coming soon</string>
-    <string name="placeholder_book_id">Book id: %1$d</string>
-    <string name="open_book_1">Open book #1</string>
-
     <!-- Common actions -->
     <string name="back">Back</string>
     <string name="save">Save</string>
