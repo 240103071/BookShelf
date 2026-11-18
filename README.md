@@ -2,7 +2,7 @@
 
 A personal library app for Android. Users keep a list of their books, track what they want to read, are reading and have finished, rate books, and see reading statistics.
 
-Built with **Kotlin** and **Jetpack Compose** (Material 3), using the **MVVM** architecture.
+Built with **Kotlin** and **Jetpack Compose** , using the **MVVM** architecture.
 
 ## Group members
 
