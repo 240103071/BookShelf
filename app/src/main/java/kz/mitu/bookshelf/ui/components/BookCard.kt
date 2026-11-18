@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
 /**
- * One row in the book list: cover, title, author, status and a favorite button.
+ * One row in the book list: cover, title, author, rating and status.
  * It takes plain values (not a Book object), so it can be reused anywhere.
  */
 @Composable
@@ -28,9 +28,8 @@ fun BookCard(
     title: String,
     author: String,
     statusLabel: String,
-    isFavorite: Boolean,
+    rating: Int,
     onClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -62,10 +61,11 @@ fun BookCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                Spacer(modifier = Modifier.height(6.dp))
+                RatingBar(rating = rating)
                 Spacer(modifier = Modifier.height(8.dp))
                 StatusBadge(text = statusLabel)
             }
-            FavoriteButton(isFavorite = isFavorite, onClick = onFavoriteClick)
         }
     }
 }
@@ -75,12 +75,11 @@ fun BookCard(
 private fun BookCardPreview() {
     BookShelfTheme {
         BookCard(
-            title = "Abai Joly",
+            title = "The Path of Abai",
             author = "Mukhtar Auezov",
-            statusLabel = "Reading",
-            isFavorite = true,
+            statusLabel = "Finished",
+            rating = 5,
             onClick = {},
-            onFavoriteClick = {},
             modifier = Modifier.padding(16.dp)
         )
     }
