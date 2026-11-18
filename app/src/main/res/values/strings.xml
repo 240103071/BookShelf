@@ -55,4 +55,11 @@
     <string name="field_description">Description</string>
     <string name="error_required">This field is required</string>
     <string name="error_pages">Enter a positive number of pages</string>
+
+    <!-- Statistics -->
+    <string name="stats_total_books">Books</string>
+    <string name="stats_pages_read">Pages read</string>
+    <string name="stats_average_rating">Avg rating</string>
+    <string name="stats_average_value">%1$.1f ★</string>
+    <string name="stats_by_status">By status</string>
 </resources>
