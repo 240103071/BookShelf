@@ -40,6 +40,11 @@ object BookRepository {
         }
     }
 
+    /** Restores the initial sample books. Used by unit tests only. */
+    internal fun reset() {
+        _books.value = sampleBooks()
+    }
+
     private fun sampleBooks(): List<Book> = listOf(
         Book(
             id = 1,
