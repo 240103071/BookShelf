@@ -54,5 +54,5 @@
     <string name="field_rating">Rating</string>
     <string name="field_description">Description</string>
     <string name="error_required">This field is required</string>
-    <string name="error_pages">Enter a number of pages from 1 to 10000</string>
+    <string name="error_pages">Enter a positive number of pages</string>
 </resources>
