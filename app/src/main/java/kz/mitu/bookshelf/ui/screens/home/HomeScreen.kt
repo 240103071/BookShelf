@@ -18,6 +18,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,7 +43,7 @@ import kz.mitu.bookshelf.ui.components.SearchField
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
 /**
- * Start screen: search, status filter, list of books, "+" button.
+ * Start screen: search, status and genre filters, list of books, "+" button.
  * Top bar: "Statistics" button and a ⋮ menu to choose the sort order.
  * Stateless: data comes in as parameters, actions go out as callbacks.
  * The ViewModel is connected in the navigation graph.
@@ -53,9 +54,13 @@ fun HomeScreen(
     query: String,
     selectedStatus: BookStatus?,
     selectedSort: SortOption,
+    genres: List<String>,
+    selectedGenre: String?,
     onQueryChange: (String) -> Unit,
     onStatusSelected: (BookStatus?) -> Unit,
     onSortChange: (SortOption) -> Unit,
+    onGenreSelected: (String?) -> Unit,
+    onClearFilters: () -> Unit,
     onBookClick: (Int) -> Unit,
     onAddClick: () -> Unit,
     onStatsClick: () -> Unit,
@@ -135,9 +140,19 @@ fun HomeScreen(
                 label = { status -> stringResource(status.labelRes) },
                 allLabel = stringResource(R.string.filter_all)
             )
+            // Genre filter: genres come from the ViewModel (all books, A–Z)
+            if (genres.isNotEmpty()) {
+                FilterChipRow(
+                    options = genres,
+                    selected = selectedGenre,
+                    onSelected = onGenreSelected,
+                    label = { genre -> genre },
+                    allLabel = stringResource(R.string.filter_all_genres)
+                )
+            }
 
             if (books.isEmpty()) {
-                val isFiltering = query.isNotBlank() || selectedStatus != null
+                val isFiltering = query.isNotBlank() || selectedStatus != null || selectedGenre != null
                 EmptyState(
                     title = stringResource(
                         if (isFiltering) R.string.empty_search_title else R.string.empty_books_title
@@ -145,7 +160,16 @@ fun HomeScreen(
                     message = stringResource(
                         if (isFiltering) R.string.empty_search_message else R.string.empty_books_message
                     ),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    action = if (isFiltering) {
+                        {
+                            OutlinedButton(onClick = onClearFilters) {
+                                Text(text = stringResource(R.string.clear_filters))
+                            }
+                        }
+                    } else {
+                        null
+                    }
                 )
             } else {
                 LazyColumn(
@@ -195,9 +219,13 @@ private fun HomeScreenPreview() {
             query = "",
             selectedStatus = null,
             selectedSort = SortOption.RECENTLY_ADDED,
+            genres = listOf("Historical novel", "Philosophy"),
+            selectedGenre = null,
             onQueryChange = {},
             onStatusSelected = {},
             onSortChange = {},
+            onGenreSelected = {},
+            onClearFilters = {},
             onBookClick = {},
             onAddClick = {},
             onStatsClick = {}

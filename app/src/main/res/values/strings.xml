@@ -18,6 +18,8 @@
     <string name="search_books">Search by title or author</string>
     <string name="clear_search">Clear search</string>
     <string name="filter_all">All</string>
+    <string name="filter_all_genres">All genres</string>
+    <string name="clear_filters">Clear filters</string>
     <string name="sort_by">Sort by</string>
     <string name="sort_title">Title</string>
     <string name="sort_rating">Rating</string>

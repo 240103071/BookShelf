@@ -39,9 +39,13 @@ fun AppNavHost(
                 query = uiState.query,
                 selectedStatus = uiState.selectedStatus,
                 selectedSort = uiState.selectedSort,
+                genres = uiState.genres,
+                selectedGenre = uiState.selectedGenre,
                 onQueryChange = viewModel::onQueryChange,
                 onStatusSelected = viewModel::onStatusFilterChange,
                 onSortChange = viewModel::onSortChange,
+                onGenreSelected = viewModel::onGenreChange,
+                onClearFilters = viewModel::clearFilters,
                 onBookClick = { bookId -> navController.navigate(Screen.Detail.createRoute(bookId)) },
                 onAddClick = { navController.navigate(Screen.Add.route) },
                 onStatsClick = { navController.navigate(Screen.Stats.route) }
