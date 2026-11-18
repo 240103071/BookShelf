@@ -1,6 +1,7 @@
 package kz.mitu.bookshelf.ui.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,12 +10,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.R
 import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
+import kz.mitu.bookshelf.data.model.SortOption
 import kz.mitu.bookshelf.ui.components.BookCard
 import kz.mitu.bookshelf.ui.components.BookShelfTopBar
 import kz.mitu.bookshelf.ui.components.EmptyState
@@ -30,8 +42,8 @@ import kz.mitu.bookshelf.ui.components.SearchField
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
 /**
- * Start screen: search, status filter, list of books, "+" button
- * and a "Statistics" button in the top bar.
+ * Start screen: search, status filter, list of books, "+" button.
+ * Top bar: "Statistics" button and a ⋮ menu to choose the sort order.
  * Stateless: data comes in as parameters, actions go out as callbacks.
  * The ViewModel is connected in the navigation graph.
  */
@@ -40,13 +52,18 @@ fun HomeScreen(
     books: List<Book>,
     query: String,
     selectedStatus: BookStatus?,
+    selectedSort: SortOption,
     onQueryChange: (String) -> Unit,
     onStatusSelected: (BookStatus?) -> Unit,
+    onSortChange: (SortOption) -> Unit,
     onBookClick: (Int) -> Unit,
     onAddClick: () -> Unit,
     onStatsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // UI-only state: is the sort menu open
+    var sortMenuOpen by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -55,6 +72,39 @@ fun HomeScreen(
                 actions = {
                     TextButton(onClick = onStatsClick) {
                         Text(text = stringResource(R.string.statistics))
+                    }
+                    Box {
+                        IconButton(onClick = { sortMenuOpen = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.MoreVert,
+                                contentDescription = stringResource(R.string.sort_by)
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = sortMenuOpen,
+                            onDismissRequest = { sortMenuOpen = false }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.sort_by),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                            )
+                            SortOption.entries.forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(option.labelRes)) },
+                                    onClick = {
+                                        onSortChange(option)
+                                        sortMenuOpen = false
+                                    },
+                                    trailingIcon = {
+                                        if (option == selectedSort) {
+                                            Icon(imageVector = Icons.Filled.Check, contentDescription = null)
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             )
@@ -117,6 +167,14 @@ fun HomeScreen(
     }
 }
 
+/** Text for each sort option from strings.xml. */
+private val SortOption.labelRes: Int
+    get() = when (this) {
+        SortOption.TITLE -> R.string.sort_title
+        SortOption.RATING -> R.string.sort_rating
+        SortOption.RECENTLY_ADDED -> R.string.sort_recent
+    }
+
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
@@ -136,8 +194,10 @@ private fun HomeScreenPreview() {
             ),
             query = "",
             selectedStatus = null,
+            selectedSort = SortOption.RECENTLY_ADDED,
             onQueryChange = {},
             onStatusSelected = {},
+            onSortChange = {},
             onBookClick = {},
             onAddClick = {},
             onStatsClick = {}
