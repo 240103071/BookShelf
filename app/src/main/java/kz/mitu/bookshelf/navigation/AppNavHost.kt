@@ -56,7 +56,6 @@ fun AppNavHost(
             route = Screen.Detail.route,
             arguments = listOf(navArgument(Screen.ARG_BOOK_ID) { type = NavType.IntType })
         ) {
-            // DetailViewModel reads bookId from SavedStateHandle by itself
             val viewModel: DetailViewModel = viewModel()
             val book by viewModel.book.collectAsStateWithLifecycle()
 
@@ -101,7 +100,6 @@ fun AppNavHost(
     }
 }
 
-/** Add and Edit use the same form; edit mode comes from the "bookId" argument. */
 @Composable
 private fun AddEditDestination(onDone: () -> Unit) {
     val viewModel: AddEditBookViewModel = viewModel()

@@ -2,9 +2,6 @@ package kz.mitu.bookshelf.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Warm "paper and leather" palette for the BookShelf app.
-
-// Light theme
 val PrimaryLight = Color(0xFF7D5636)
 val OnPrimaryLight = Color(0xFFFFFFFF)
 val PrimaryContainerLight = Color(0xFFFFDCC2)
@@ -29,7 +26,6 @@ val SurfaceContainerLight = Color(0xFFFCEBE2)
 val SurfaceContainerHighLight = Color(0xFFF6E5DC)
 val SurfaceContainerHighestLight = Color(0xFFF0DFD7)
 
-// Dark theme
 val PrimaryDark = Color(0xFFF0BC95)
 val OnPrimaryDark = Color(0xFF48290D)
 val PrimaryContainerDark = Color(0xFF623F21)

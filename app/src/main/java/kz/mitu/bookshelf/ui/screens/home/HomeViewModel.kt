@@ -18,12 +18,10 @@ data class HomeUiState(
     val selectedStatus: BookStatus? = null,
     val selectedSort: SortOption = SortOption.RECENTLY_ADDED,
     val selectedGenre: String? = null,
-    /** Distinct genres of all books (not only the filtered ones), A–Z. */
     val genres: List<String> = emptyList()
 )
 
 class HomeViewModel : ViewModel() {
-
     private val query = MutableStateFlow("")
     private val selectedStatus = MutableStateFlow<BookStatus?>(null)
     private val selectedSort = MutableStateFlow(SortOption.RECENTLY_ADDED)
@@ -75,7 +73,6 @@ class HomeViewModel : ViewModel() {
         selectedGenre.value = genre
     }
 
-    /** Resets search, status and genre filters. The sort option is kept. */
     fun clearFilters() {
         query.value = ""
         selectedStatus.value = null

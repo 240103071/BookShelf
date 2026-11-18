@@ -43,10 +43,6 @@ import kz.mitu.bookshelf.ui.components.FilterChipRow
 import kz.mitu.bookshelf.ui.components.RatingBar
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * Details of one book. [book] is null when no book has this id
- * (for example, it was deleted).
- */
 @Composable
 fun BookDetailScreen(
     book: Book?,
@@ -57,7 +53,6 @@ fun BookDetailScreen(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // UI-only state: is the "Delete?" dialog open. Survives screen rotation.
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
@@ -121,7 +116,6 @@ fun BookDetailScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                // Tap a star to change the rating
                 RatingBar(
                     rating = book.rating,
                     starSize = 24.dp,

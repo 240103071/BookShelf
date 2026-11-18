@@ -10,7 +10,6 @@ import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
 
 object BookRepository {
-
     private val _books = MutableStateFlow(sampleBooks())
     val books: StateFlow<List<Book>> = _books.asStateFlow()
 
@@ -40,7 +39,6 @@ object BookRepository {
         }
     }
 
-    /** Restores the initial sample books. Used by unit tests only. */
     internal fun reset() {
         _books.value = sampleBooks()
     }

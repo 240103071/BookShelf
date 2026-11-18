@@ -13,12 +13,11 @@ import kz.mitu.bookshelf.data.repository.BookRepository
 data class StatsUiState(
     val totalBooks: Int = 0,
     val countByStatus: Map<BookStatus, Int> = BookStatus.entries.associateWith { 0 },
-    val pagesRead: Int = 0, // FINISHED books only
+    val pagesRead: Int = 0,
     val averageRating: Float = 0f
 )
 
 class StatsViewModel : ViewModel() {
-
     val uiState: StateFlow<StatsUiState> = BookRepository.books
         .map(::toStats)
         .stateIn(
@@ -28,7 +27,6 @@ class StatsViewModel : ViewModel() {
         )
 
     private fun toStats(books: List<Book>): StatsUiState {
-        // Rating 0 means "not rated yet", so those books are left out of the average.
         val ratings = books.map { it.rating }.filter { it > 0 }
         return StatsUiState(
             totalBooks = books.size,

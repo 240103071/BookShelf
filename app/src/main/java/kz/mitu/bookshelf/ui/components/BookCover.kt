@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-// Possible cover colors. The same title always gets the same color.
 private val CoverColors = listOf(
     Color(0xFF7D5636),
     Color(0xFF5E6135),
@@ -29,10 +28,6 @@ private val CoverColors = listOf(
     Color(0xFF2F6B5B)
 )
 
-/**
- * Placeholder book cover: a colored rectangle (2:3 like a real book)
- * with the initials of the title, e.g. "Abai Joly" -> "AJ".
- */
 @Composable
 fun BookCover(
     title: String,

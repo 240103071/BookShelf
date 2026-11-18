@@ -18,10 +18,6 @@ import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.R
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * Search box. It does not keep its own text: the screen passes [query]
- * and gets every change through [onQueryChange] (state hoisting).
- */
 @Composable
 fun SearchField(
     query: String,

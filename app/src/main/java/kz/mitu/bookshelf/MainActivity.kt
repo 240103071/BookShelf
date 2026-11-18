@@ -17,8 +17,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BookShelfTheme {
-                // Every screen has its own Scaffold (top bar + insets),
-                // so here we only set the background color.
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

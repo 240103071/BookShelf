@@ -11,7 +11,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/** Small rounded label, e.g. "Reading" or "Finished". */
 @Composable
 fun StatusBadge(
     text: String,

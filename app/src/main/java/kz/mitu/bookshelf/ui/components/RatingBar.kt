@@ -21,12 +21,6 @@ import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.R
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * Stars from 0 to [maxRating].
- * - Without [onRatingChange] it only shows the rating (book list, details).
- * - With [onRatingChange] every star is a button (add book form).
- *   Tapping the current star again sets the rating back to 0.
- */
 @Composable
 fun RatingBar(
     rating: Int,

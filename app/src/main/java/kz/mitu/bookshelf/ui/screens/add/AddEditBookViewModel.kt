@@ -26,8 +26,6 @@ data class AddEditUiState(
 )
 
 class AddEditBookViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
-
-    /** Id of the book being edited, or null when adding a new book. */
     private val bookId: Int? = savedStateHandle[Screen.ARG_BOOK_ID]
 
     private val _uiState = MutableStateFlow(initialState())
@@ -69,7 +67,6 @@ class AddEditBookViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     fun onDescriptionChange(value: String) =
         _uiState.update { it.copy(description = value) }
 
-    /** Validates the form and saves the book. Returns true if the book was saved. */
     fun save(): Boolean {
         val state = _uiState.value
         val pages = state.pages.trim().toIntOrNull()
@@ -85,7 +82,7 @@ class AddEditBookViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         }
 
         val book = Book(
-            id = bookId ?: 0, // the repository assigns a new id when adding
+            id = bookId ?: 0,
             title = state.title.trim(),
             author = state.author.trim(),
             genre = state.genre.trim(),

@@ -15,7 +15,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatsViewModelTest {
-
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
@@ -46,9 +45,7 @@ class StatsViewModelTest {
             ),
             state.countByStatus
         )
-        // FINISHED: 1100 + 328 + 96
         assertEquals(1524, state.pagesRead)
-        // Rated books only (rating > 0): (5 + 4 + 5 + 4) / 4
         assertEquals(4.5f, state.averageRating, 0.001f)
     }
 
@@ -56,15 +53,14 @@ class StatsViewModelTest {
     fun stats_updateWhenRepositoryChanges() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
-        BookRepository.updateStatus(2, BookStatus.FINISHED) // +960 pages
-        BookRepository.deleteBook(4) // FINISHED, 328 pages, rating 5
+        BookRepository.updateStatus(2, BookStatus.FINISHED)
+        BookRepository.deleteBook(4)
 
         val state = viewModel.uiState.value
         assertEquals(5, state.totalBooks)
         assertEquals(0, state.countByStatus[BookStatus.READING])
         assertEquals(3, state.countByStatus[BookStatus.FINISHED])
         assertEquals(1100 + 96 + 960, state.pagesRead)
-        // Remaining ratings: 5, 4, 4
         assertEquals(13f / 3f, state.averageRating, 0.001f)
     }
 

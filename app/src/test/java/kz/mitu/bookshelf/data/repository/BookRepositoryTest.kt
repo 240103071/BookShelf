@@ -11,7 +11,6 @@ import org.junit.Before
 import org.junit.Test
 
 class BookRepositoryTest {
-
     private val books get() = BookRepository.books.value
 
     private fun findBook(id: Int): Book? = books.find { it.id == id }
@@ -42,7 +41,7 @@ class BookRepositoryTest {
         val sizeBefore = books.size
         val maxIdBefore = books.maxOf { it.id }
 
-        BookRepository.addBook(newBook(id = 1)) // passed id must be ignored
+        BookRepository.addBook(newBook(id = 1))
 
         assertEquals(sizeBefore + 1, books.size)
         val added = books.last()

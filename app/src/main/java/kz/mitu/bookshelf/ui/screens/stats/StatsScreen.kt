@@ -25,10 +25,6 @@ import kz.mitu.bookshelf.ui.components.BookShelfTopBar
 import kz.mitu.bookshelf.ui.components.StatCard
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * Reading statistics. All numbers are calculated in StatsViewModel,
- * this screen only shows them.
- */
 @Composable
 fun StatsScreen(
     totalBooks: Int,
@@ -79,7 +75,6 @@ fun StatsScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            // One row per status: name, count and a bar showing its share of all books
             BookStatus.entries.forEach { status ->
                 val count = countByStatus[status] ?: 0
                 val share = if (totalBooks > 0) count.toFloat() / totalBooks else 0f

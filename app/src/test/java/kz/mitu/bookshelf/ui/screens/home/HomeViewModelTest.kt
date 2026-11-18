@@ -19,7 +19,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
-
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
@@ -64,7 +63,6 @@ class HomeViewModelTest {
 
         viewModel.onQueryChange("abai")
 
-        // "The Path of Abai" (title) and "Book of Words" by Abai Kunanbayev (author)
         assertEquals(setOf(1, 3), viewModel.uiState.value.books.map { it.id }.toSet())
     }
 
@@ -119,8 +117,6 @@ class HomeViewModelTest {
         assertEquals(setOf(2, 6), viewModel.uiState.value.books.map { it.id }.toSet())
     }
 
-    // --- Sorting ---
-
     private fun ids() = viewModel.uiState.value.books.map { it.id }
 
     private fun newBook(title: String, rating: Int = 0) = Book(
@@ -135,14 +131,13 @@ class HomeViewModelTest {
         viewModel.onSortChange(SortOption.TITLE)
 
         assertEquals(SortOption.TITLE, viewModel.uiState.value.selectedSort)
-        // 1984, Book of Words, Crime and Punishment, The Little Prince, The Nomads, The Path of Abai
         assertEquals(listOf(4, 3, 6, 5, 2, 1), ids())
     }
 
     @Test
     fun sortByTitle_ignoresCase() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
-        BookRepository.addBook(newBook(title = "apple")) // id 7
+        BookRepository.addBook(newBook(title = "apple"))
 
         viewModel.onSortChange(SortOption.TITLE)
 
@@ -155,7 +150,6 @@ class HomeViewModelTest {
 
         viewModel.onSortChange(SortOption.RATING)
 
-        // 5: 1984, The Path of Abai; 4: The Little Prince, The Nomads; 0: Book of Words, Crime and Punishment
         assertEquals(listOf(4, 1, 5, 2, 3, 6), ids())
         val ratings = viewModel.uiState.value.books.map { it.rating }
         assertEquals(ratings.sortedDescending(), ratings)
@@ -167,7 +161,7 @@ class HomeViewModelTest {
         viewModel.onSortChange(SortOption.TITLE)
 
         viewModel.onSortChange(SortOption.RECENTLY_ADDED)
-        BookRepository.addBook(newBook(title = "Newest")) // id 7
+        BookRepository.addBook(newBook(title = "Newest"))
 
         assertEquals(SortOption.RECENTLY_ADDED, viewModel.uiState.value.selectedSort)
         assertEquals(listOf(7, 6, 5, 4, 3, 2, 1), ids())
@@ -180,17 +174,13 @@ class HomeViewModelTest {
         viewModel.onStatusFilterChange(BookStatus.FINISHED)
         viewModel.onSortChange(SortOption.TITLE)
 
-        // FINISHED only: 1984, The Little Prince, The Path of Abai
         assertEquals(listOf(4, 5, 1), ids())
     }
-
-    // --- Genres ---
 
     @Test
     fun genres_areDistinctAndSorted() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
-        // "Historical novel" appears twice in the sample books but only once here
         assertEquals(
             listOf("Dystopia", "Fable", "Historical novel", "Philosophy", "Psychological novel"),
             viewModel.uiState.value.genres
@@ -214,15 +204,13 @@ class HomeViewModelTest {
 
         BookRepository.addBook(newBook(title = "A").copy(genre = "Adventure"))
         BookRepository.addBook(newBook(title = "B").copy(genre = "  "))
-        BookRepository.deleteBook(5) // the only "Fable"
+        BookRepository.deleteBook(5)
 
         assertEquals(
             listOf("Adventure", "Dystopia", "Historical novel", "Philosophy", "Psychological novel"),
             viewModel.uiState.value.genres
         )
     }
-
-    // --- Genre filter and clearFilters ---
 
     @Test
     fun genreFilter_showsOnlyBooksOfThatGenre() = runTest {

@@ -6,7 +6,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Serif font for titles (feels like a book), default sans-serif for body text.
 val Typography = Typography(
     headlineSmall = TextStyle(
         fontFamily = FontFamily.Serif,

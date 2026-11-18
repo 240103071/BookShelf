@@ -12,7 +12,6 @@ import kz.mitu.bookshelf.data.repository.BookRepository
 import kz.mitu.bookshelf.navigation.Screen
 
 class DetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
-
     private val bookId: Int = checkNotNull(savedStateHandle[Screen.ARG_BOOK_ID]) {
         "DetailViewModel requires a \"${Screen.ARG_BOOK_ID}\" argument"
     }

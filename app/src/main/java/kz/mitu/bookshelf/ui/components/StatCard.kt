@@ -12,7 +12,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/** One number with a label under it, e.g. "6" / "Books". */
 @Composable
 fun StatCard(
     value: String,

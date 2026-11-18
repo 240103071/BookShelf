@@ -18,10 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import kz.mitu.bookshelf.R
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * One top bar for every screen.
- * If [onBackClick] is null there is no back arrow (start screen).
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookShelfTopBar(

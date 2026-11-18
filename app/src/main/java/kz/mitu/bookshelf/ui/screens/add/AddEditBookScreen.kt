@@ -29,12 +29,6 @@ import kz.mitu.bookshelf.ui.components.FilterChipRow
 import kz.mitu.bookshelf.ui.components.RatingBar
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * One form for both "Add book" and "Edit book" ([isEditMode]).
- * Stateless: field values and errors come from AddEditBookViewModel,
- * every change goes back to it through the onXxxChange callbacks.
- * Validation and saving happen in the ViewModel.
- */
 @Composable
 fun AddEditBookScreen(
     isEditMode: Boolean,
@@ -98,7 +92,6 @@ fun AddEditBookScreen(
             )
             BookTextField(
                 value = pages,
-                // the keyboard can still paste letters, so keep only digits (max 5)
                 onValueChange = { newValue -> onPagesChange(newValue.filter { it.isDigit() }.take(5)) },
                 label = stringResource(R.string.field_pages),
                 errorMessage = if (pagesError) stringResource(R.string.error_pages) else null,

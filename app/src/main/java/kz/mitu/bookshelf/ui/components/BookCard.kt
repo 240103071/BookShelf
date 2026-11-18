@@ -19,10 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * One row in the book list: cover, title, author, rating and status.
- * It takes plain values (not a Book object), so it can be reused anywhere.
- */
 @Composable
 fun BookCard(
     title: String,

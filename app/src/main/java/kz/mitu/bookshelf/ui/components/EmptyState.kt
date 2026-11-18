@@ -15,10 +15,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * Shown when there is nothing to display (empty list, nothing found, book not found).
- * [action] is an optional button under the text, e.g. "Clear filters".
- */
 @Composable
 fun EmptyState(
     title: String,

@@ -62,10 +62,6 @@ private val DarkColorScheme = darkColorScheme(
     surfaceContainerHighest = SurfaceContainerHighestDark
 )
 
-/**
- * App theme. Dynamic color (Android 12+ wallpaper colors) is turned off
- * so the app always uses the same BookShelf palette on every device.
- */
 @Composable
 fun BookShelfTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

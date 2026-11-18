@@ -42,12 +42,6 @@ import kz.mitu.bookshelf.ui.components.FilterChipRow
 import kz.mitu.bookshelf.ui.components.SearchField
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * Start screen: search, status and genre filters, list of books, "+" button.
- * Top bar: "Statistics" button and a ⋮ menu to choose the sort order.
- * Stateless: data comes in as parameters, actions go out as callbacks.
- * The ViewModel is connected in the navigation graph.
- */
 @Composable
 fun HomeScreen(
     books: List<Book>,
@@ -66,7 +60,6 @@ fun HomeScreen(
     onStatsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // UI-only state: is the sort menu open
     var sortMenuOpen by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -140,7 +133,6 @@ fun HomeScreen(
                 label = { status -> stringResource(status.labelRes) },
                 allLabel = stringResource(R.string.filter_all)
             )
-            // Genre filter: genres come from the ViewModel (all books, A–Z)
             if (genres.isNotEmpty()) {
                 FilterChipRow(
                     options = genres,
@@ -191,7 +183,6 @@ fun HomeScreen(
     }
 }
 
-/** Text for each sort option from strings.xml. */
 private val SortOption.labelRes: Int
     get() = when (this) {
         SortOption.TITLE -> R.string.sort_title

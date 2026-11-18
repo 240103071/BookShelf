@@ -6,7 +6,7 @@ data class Book(
     val author: String,
     val genre: String,
     val pages: Int,
-    val rating: Int, // 0..5
+    val rating: Int,
     val status: BookStatus,
     val description: String
 )

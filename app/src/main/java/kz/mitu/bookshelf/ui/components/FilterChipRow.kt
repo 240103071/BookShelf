@@ -12,13 +12,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * A horizontal row of filter chips. It is generic (<T>), so it works with
- * any list of options: reading statuses, genres, and so on.
- *
- * - If [allLabel] is not null, an extra "All" chip is shown first (selected = null).
- * - Tapping the selected chip again clears the selection.
- */
 @Composable
 fun <T> FilterChipRow(
     options: List<T>,

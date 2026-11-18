@@ -14,10 +14,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kz.mitu.bookshelf.ui.theme.BookShelfTheme
 
-/**
- * Text field used in forms. Shows [errorMessage] under the field in red
- * when it is not null.
- */
 @Composable
 fun BookTextField(
     value: String,
