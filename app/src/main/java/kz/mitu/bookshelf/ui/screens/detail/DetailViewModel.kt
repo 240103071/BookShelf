@@ -6,9 +6,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
-import kz.mitu.bookshelf.data.repository.BookRepository
+import kz.mitu.bookshelf.BookShelfApp
 import kz.mitu.bookshelf.navigation.Screen
 
 class DetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
@@ -16,22 +17,24 @@ class DetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         "DetailViewModel requires a \"${Screen.ARG_BOOK_ID}\" argument"
     }
 
-    val book: StateFlow<Book?> = BookRepository.getBook(bookId).stateIn(
+    private val repository = BookShelfApp.instance.bookRepository
+
+    val book: StateFlow<Book?> = repository.getBook(bookId).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = null
     )
 
     fun changeStatus(status: BookStatus) {
-        BookRepository.updateStatus(bookId, status)
+        viewModelScope.launch { repository.updateStatus(bookId, status) }
     }
 
     fun updateRating(rating: Int) {
-        val current = BookRepository.books.value.find { it.id == bookId } ?: return
-        BookRepository.updateBook(current.copy(rating = rating.coerceIn(0, 5)))
+        val current = book.value ?: return
+        viewModelScope.launch { repository.updateBook(current.copy(rating = rating.coerceIn(0, 5))) }
     }
 
     fun deleteBook() {
-        BookRepository.deleteBook(bookId)
+        viewModelScope.launch { repository.deleteBook(bookId) }
     }
 }

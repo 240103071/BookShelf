@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
-import kz.mitu.bookshelf.data.repository.BookRepository
+import kz.mitu.bookshelf.BookShelfApp
 
 data class StatsUiState(
     val totalBooks: Int = 0,
@@ -18,7 +18,9 @@ data class StatsUiState(
 )
 
 class StatsViewModel : ViewModel() {
-    val uiState: StateFlow<StatsUiState> = BookRepository.books
+    private val repository = BookShelfApp.instance.bookRepository
+
+    val uiState: StateFlow<StatsUiState> = repository.books
         .map(::toStats)
         .stateIn(
             scope = viewModelScope,

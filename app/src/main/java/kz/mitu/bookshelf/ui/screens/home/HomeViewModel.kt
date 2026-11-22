@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
 import kz.mitu.bookshelf.data.model.SortOption
-import kz.mitu.bookshelf.data.repository.BookRepository
+import kz.mitu.bookshelf.BookShelfApp
 
 data class HomeUiState(
     val books: List<Book> = emptyList(),
@@ -22,13 +22,15 @@ data class HomeUiState(
 )
 
 class HomeViewModel : ViewModel() {
+    private val repository = BookShelfApp.instance.bookRepository
+
     private val query = MutableStateFlow("")
     private val selectedStatus = MutableStateFlow<BookStatus?>(null)
     private val selectedSort = MutableStateFlow(SortOption.RECENTLY_ADDED)
     private val selectedGenre = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<HomeUiState> = combine(
-        BookRepository.books,
+        repository.books,
         query,
         selectedStatus,
         selectedSort,

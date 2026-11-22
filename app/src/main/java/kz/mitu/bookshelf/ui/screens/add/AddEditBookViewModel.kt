@@ -2,13 +2,16 @@ package kz.mitu.bookshelf.ui.screens.add
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
-import kz.mitu.bookshelf.data.repository.BookRepository
+import kz.mitu.bookshelf.BookShelfApp
 import kz.mitu.bookshelf.navigation.Screen
 
 data class AddEditUiState(
@@ -28,22 +31,28 @@ data class AddEditUiState(
 class AddEditBookViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     private val bookId: Int? = savedStateHandle[Screen.ARG_BOOK_ID]
 
-    private val _uiState = MutableStateFlow(initialState())
+    private val repository = BookShelfApp.instance.bookRepository
+
+    private val _uiState = MutableStateFlow(AddEditUiState(isEditMode = bookId != null))
     val uiState: StateFlow<AddEditUiState> = _uiState.asStateFlow()
 
-    private fun initialState(): AddEditUiState {
-        val book = bookId?.let { id -> BookRepository.books.value.find { it.id == id } }
-            ?: return AddEditUiState()
-        return AddEditUiState(
-            isEditMode = true,
-            title = book.title,
-            author = book.author,
-            genre = book.genre,
-            pages = book.pages.toString(),
-            rating = book.rating,
-            status = book.status,
-            description = book.description
-        )
+    init {
+        if (bookId != null) {
+            viewModelScope.launch {
+                val book = repository.getBook(bookId).first() ?: return@launch
+                _uiState.update {
+                    it.copy(
+                        title = book.title,
+                        author = book.author,
+                        genre = book.genre,
+                        pages = book.pages.toString(),
+                        rating = book.rating,
+                        status = book.status,
+                        description = book.description
+                    )
+                }
+            }
+        }
     }
 
     fun onTitleChange(value: String) =
@@ -91,7 +100,9 @@ class AddEditBookViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
             status = state.status,
             description = state.description.trim()
         )
-        if (state.isEditMode) BookRepository.updateBook(book) else BookRepository.addBook(book)
+        viewModelScope.launch {
+            if (state.isEditMode) repository.updateBook(book) else repository.addBook(book)
+        }
         return true
     }
 }

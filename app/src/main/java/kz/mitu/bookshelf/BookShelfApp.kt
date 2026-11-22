@@ -8,14 +8,19 @@ import kotlinx.coroutines.launch
 import kz.mitu.bookshelf.data.local.BookDatabase
 import kz.mitu.bookshelf.data.local.sampleBooks
 import kz.mitu.bookshelf.data.local.toEntity
+import kz.mitu.bookshelf.data.repository.BookRepository
+import kz.mitu.bookshelf.data.repository.RoomBookRepository
 
 class BookShelfApp : Application() {
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     val database: BookDatabase by lazy { BookDatabase.getInstance(this) }
 
+    val bookRepository: BookRepository by lazy { RoomBookRepository(database.bookDao()) }
+
     override fun onCreate() {
         super.onCreate()
+        instance = this
         seedDatabaseIfEmpty()
     }
 
@@ -26,5 +31,10 @@ class BookShelfApp : Application() {
                 dao.insertAll(sampleBooks.map { it.copy(id = 0).toEntity() })
             }
         }
+    }
+
+    companion object {
+        lateinit var instance: BookShelfApp
+            private set
     }
 }
