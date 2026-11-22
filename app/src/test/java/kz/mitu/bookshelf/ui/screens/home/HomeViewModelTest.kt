@@ -9,6 +9,7 @@ import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
 import kz.mitu.bookshelf.data.model.SortOption
 import kz.mitu.bookshelf.data.repository.FakeBookRepository
+import kz.mitu.bookshelf.data.settings.FakeSettingsRepository
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -22,12 +23,14 @@ class HomeViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private lateinit var repository: FakeBookRepository
+    private lateinit var settingsRepository: FakeSettingsRepository
     private lateinit var viewModel: HomeViewModel
 
     @Before
     fun setUp() {
         repository = FakeBookRepository()
-        viewModel = HomeViewModel(repository)
+        settingsRepository = FakeSettingsRepository()
+        viewModel = HomeViewModel(repository, settingsRepository)
     }
 
     @Test
@@ -256,5 +259,24 @@ class HomeViewModelTest {
         assertNull(state.selectedGenre)
         assertEquals(SortOption.TITLE, state.selectedSort)
         assertEquals(6, state.books.size)
+    }
+
+    @Test
+    fun sortChange_isSavedToSettings() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+
+        viewModel.onSortChange(SortOption.RATING)
+
+        assertEquals(SortOption.RATING, settingsRepository.currentSortOption)
+    }
+
+    @Test
+    fun savedSort_isUsedOnStart() = runTest {
+        settingsRepository = FakeSettingsRepository(sortOption = SortOption.TITLE)
+        viewModel = HomeViewModel(repository, settingsRepository)
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+
+        assertEquals(SortOption.TITLE, viewModel.uiState.value.selectedSort)
+        assertEquals(listOf(4, 3, 6, 5, 2, 1), ids())
     }
 }

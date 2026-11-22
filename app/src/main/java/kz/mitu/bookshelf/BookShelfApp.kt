@@ -10,6 +10,8 @@ import kz.mitu.bookshelf.data.local.sampleBooks
 import kz.mitu.bookshelf.data.local.toEntity
 import kz.mitu.bookshelf.data.repository.BookRepository
 import kz.mitu.bookshelf.data.repository.RoomBookRepository
+import kz.mitu.bookshelf.data.settings.DataStoreSettingsRepository
+import kz.mitu.bookshelf.data.settings.SettingsRepository
 
 class BookShelfApp : Application() {
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -17,6 +19,8 @@ class BookShelfApp : Application() {
     val database: BookDatabase by lazy { BookDatabase.getInstance(this) }
 
     val bookRepository: BookRepository by lazy { RoomBookRepository(database.bookDao()) }
+
+    val settingsRepository: SettingsRepository by lazy { DataStoreSettingsRepository(this) }
 
     override fun onCreate() {
         super.onCreate()

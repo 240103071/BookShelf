@@ -11,11 +11,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
 import kz.mitu.bookshelf.data.model.SortOption
 import kz.mitu.bookshelf.BookShelfApp
 import kz.mitu.bookshelf.data.repository.BookRepository
+import kz.mitu.bookshelf.data.settings.SettingsRepository
 
 data class HomeUiState(
     val books: List<Book> = emptyList(),
@@ -27,20 +29,22 @@ data class HomeUiState(
 )
 
 class HomeViewModel(
-    private val repository: BookRepository
+    private val repository: BookRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
     private val query = MutableStateFlow("")
     private val selectedStatus = MutableStateFlow<BookStatus?>(null)
-    private val selectedSort = MutableStateFlow(SortOption.RECENTLY_ADDED)
     private val selectedGenre = MutableStateFlow<String?>(null)
+
+    private val filters = combine(query, selectedStatus, selectedGenre) { query, status, genre ->
+        Triple(query, status, genre)
+    }
 
     val uiState: StateFlow<HomeUiState> = combine(
         repository.books,
-        query,
-        selectedStatus,
-        selectedSort,
-        selectedGenre
-    ) { books, query, status, sort, genre ->
+        filters,
+        settingsRepository.sortOption
+    ) { books, (query, status, genre), sort ->
         val trimmed = query.trim()
         val filtered = books.filter { book ->
             val matchesQuery = trimmed.isEmpty() ||
@@ -73,7 +77,7 @@ class HomeViewModel(
     }
 
     fun onSortChange(sort: SortOption) {
-        selectedSort.value = sort
+        viewModelScope.launch { settingsRepository.setSortOption(sort) }
     }
 
     fun onGenreChange(genre: String?) {
@@ -103,7 +107,7 @@ class HomeViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as BookShelfApp
-                HomeViewModel(app.bookRepository)
+                HomeViewModel(app.bookRepository, app.settingsRepository)
             }
         }
     }
