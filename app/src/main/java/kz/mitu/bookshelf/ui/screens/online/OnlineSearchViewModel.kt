@@ -2,6 +2,7 @@ package kz.mitu.bookshelf.ui.screens.online
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -13,8 +14,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kz.mitu.bookshelf.BookShelfApp
 import kz.mitu.bookshelf.data.model.OnlineBook
+import kz.mitu.bookshelf.data.model.toBook
 import kz.mitu.bookshelf.data.remote.RetrofitClient
+import kz.mitu.bookshelf.data.repository.BookRepository
 import kz.mitu.bookshelf.data.repository.OnlineBookRepository
 import retrofit2.HttpException
 
@@ -31,11 +35,13 @@ sealed interface SearchResult {
 
 data class OnlineSearchUiState(
     val query: String = DEFAULT_ONLINE_QUERY,
-    val result: SearchResult = SearchResult.Loading
+    val result: SearchResult = SearchResult.Loading,
+    val addedKeys: Set<String> = emptySet()
 )
 
 class OnlineSearchViewModel(
-    private val onlineRepository: OnlineBookRepository
+    private val onlineRepository: OnlineBookRepository,
+    private val bookRepository: BookRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(OnlineSearchUiState())
     val uiState: StateFlow<OnlineSearchUiState> = _uiState.asStateFlow()
@@ -75,6 +81,14 @@ class OnlineSearchViewModel(
         search()
     }
 
+    fun addToLibrary(book: OnlineBook) {
+        if (book.key in _uiState.value.addedKeys) return
+        _uiState.update { it.copy(addedKeys = it.addedKeys + book.key) }
+        viewModelScope.launch {
+            bookRepository.addBook(book.toBook())
+        }
+    }
+
     private fun Exception.toNetworkError(): NetworkError = when (this) {
         is IOException -> NetworkError.NO_INTERNET
         is HttpException -> NetworkError.SERVER
@@ -84,7 +98,11 @@ class OnlineSearchViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                OnlineSearchViewModel(OnlineBookRepository(RetrofitClient.api))
+                val app = this[APPLICATION_KEY] as BookShelfApp
+                OnlineSearchViewModel(
+                    onlineRepository = OnlineBookRepository(RetrofitClient.api),
+                    bookRepository = app.bookRepository
+                )
             }
         }
     }
