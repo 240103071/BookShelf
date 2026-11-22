@@ -17,6 +17,8 @@ sealed class Screen(val route: String) {
 
     data object Settings : Screen("settings")
 
+    data object OnlineSearch : Screen("online_search")
+
     companion object {
         const val ARG_BOOK_ID = "bookId"
     }

@@ -17,6 +17,8 @@ import kz.mitu.bookshelf.ui.screens.detail.BookDetailScreen
 import kz.mitu.bookshelf.ui.screens.detail.DetailViewModel
 import kz.mitu.bookshelf.ui.screens.home.HomeScreen
 import kz.mitu.bookshelf.ui.screens.home.HomeViewModel
+import kz.mitu.bookshelf.ui.screens.online.OnlineSearchScreen
+import kz.mitu.bookshelf.ui.screens.online.OnlineSearchViewModel
 import kz.mitu.bookshelf.ui.screens.settings.SettingsScreen
 import kz.mitu.bookshelf.ui.screens.settings.SettingsViewModel
 import kz.mitu.bookshelf.ui.screens.stats.StatsScreen
@@ -51,7 +53,8 @@ fun AppNavHost(
                 onBookClick = { bookId -> navController.navigate(Screen.Detail.createRoute(bookId)) },
                 onAddClick = { navController.navigate(Screen.Add.route) },
                 onStatsClick = { navController.navigate(Screen.Stats.route) },
-                onSettingsClick = { navController.navigate(Screen.Settings.route) }
+                onSettingsClick = { navController.navigate(Screen.Settings.route) },
+                onOnlineSearchClick = { navController.navigate(Screen.OnlineSearch.route) }
             )
         }
 
@@ -97,6 +100,22 @@ fun AppNavHost(
                 countByStatus = stats.countByStatus,
                 pagesRead = stats.pagesRead,
                 averageRating = stats.averageRating,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.OnlineSearch.route) {
+            val viewModel: OnlineSearchViewModel = viewModel(factory = OnlineSearchViewModel.Factory)
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+            OnlineSearchScreen(
+                query = state.query,
+                result = state.result,
+                addedKeys = state.addedKeys,
+                onQueryChange = viewModel::onQueryChange,
+                onSearch = viewModel::search,
+                onRetry = viewModel::retry,
+                onAddClick = viewModel::addToLibrary,
                 onBackClick = { navController.popBackStack() }
             )
         }
