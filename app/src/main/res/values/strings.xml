@@ -77,4 +77,16 @@
     <string name="in_library">In library</string>
     <string name="unknown_author">Unknown author</string>
     <string name="online_pages">%1$d pages</string>
+    <string name="online_search_title">Find books online</string>
+    <string name="online_search_hint">Title, author or topic</string>
+    <string name="search">Search</string>
+    <string name="searching">Searching Open Library…</string>
+    <string name="data_source">Data from Open Library</string>
+    <string name="no_results_title">No books found</string>
+    <string name="no_results_message">Try another title, author or topic</string>
+    <string name="error_title">Could not load books</string>
+    <string name="error_no_internet">No internet connection. Check your connection and try again.</string>
+    <string name="error_server">The server is not responding. Please try again later.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="retry">Retry</string>
 </resources>
