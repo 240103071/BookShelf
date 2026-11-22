@@ -20,6 +20,7 @@ fun EmptyState(
     title: String,
     modifier: Modifier = Modifier,
     message: String? = null,
+    emoji: String = "📚",
     action: (@Composable () -> Unit)? = null
 ) {
     Column(
@@ -27,7 +28,7 @@ fun EmptyState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "📚", style = MaterialTheme.typography.displayMedium)
+        Text(text = emoji, style = MaterialTheme.typography.displayMedium)
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = title,
