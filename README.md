@@ -2,14 +2,14 @@
 
 A personal library app for Android. Users keep a list of their books, track what they want to read, are reading and have finished, rate books, and see reading statistics.
 
-Built with **Kotlin** and **Jetpack Compose** , using the **MVVM** architecture.
+Built with **Kotlin** and **Jetpack Compose**, using the **MVVM** architecture.
 
 ## Group members
 
 | Name | Responsibility |
 |---|---|
 | Dinislam Kadyr | Data layer (Book model, BookRepository), ViewModels, navigation routes, unit tests |
-| Adilzhan Baktybayev | UI layer: theme, reusable components, all screens, connecting screens to ViewModels and navigation |
+| Adilzhan Baktybayev | UI layer: theme, reusable components, all screens, connecting screens to ViewModels and navigation. Online book search with Retrofit (Open Library API) |
 
 ## Main features
 
@@ -20,6 +20,7 @@ Built with **Kotlin** and **Jetpack Compose** , using the **MVVM** architecture.
 - **Add and edit** books with form validation
 - **Statistics**: total books, books per status, pages read, average rating
 - Light and dark theme
+- **Find books online** (Open Library API) and add them to your library
 
 ## Architecture (MVVM)
 
@@ -38,9 +39,25 @@ navigation/     Screen (routes), AppNavHost (NavHost)
 - **ViewModel**: each screen has a ViewModel that turns repository data into UI state (`StateFlow`) and handles user actions.
 - **View**: screens are stateless composables. They receive state as parameters and send events back through callbacks. `AppNavHost` connects each screen to its ViewModel.
 
+## Online search (REST API)
+
+The app searches books in the [Open Library](https://openlibrary.org/developers/api) API and shows real data with covers.
+
+```
+data/remote/       OpenLibraryApi (Retrofit interface), RetrofitClient, dto/ (JSON → Kotlin data classes)
+data/repository/   OnlineBookRepository: calls the API and maps DTOs to OnlineBook
+ui/screens/online/ OnlineSearchViewModel (StateFlow) and OnlineSearchScreen
+```
+
+- **Retrofit + Gson** send `GET https://openlibrary.org/search.json?q=...` and convert the JSON into data classes.
+- **Coroutines**: `searchBooks` is a `suspend` function, called from `viewModelScope`.
+- **UI states**: `Loading` (progress indicator), `Success` (list of books), `Empty` (no results), `Error` (message + **Retry** button).
+- **Coil** loads the cover images from `covers.openlibrary.org`.
+- **Add to library** saves an online book to the local Room database.
+
 ## Navigation
 
-Navigation Compose with five destinations: `home`, `detail/{bookId}`, `add`, `edit/{bookId}`, `stats`.
+Navigation Compose with destinations: `home`, `detail/{bookId}`, `add`, `edit/{bookId}`, `stats`, `settings`, `online_search`.
 The `bookId` argument (`Int`) is passed to the detail and edit screens; their ViewModels read it from `SavedStateHandle`.
 Back navigation works with the top bar arrow and the system back button.
 
