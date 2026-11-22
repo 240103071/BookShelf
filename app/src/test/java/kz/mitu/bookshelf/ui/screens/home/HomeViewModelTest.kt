@@ -8,8 +8,7 @@ import kz.mitu.bookshelf.MainDispatcherRule
 import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
 import kz.mitu.bookshelf.data.model.SortOption
-import kz.mitu.bookshelf.data.repository.BookRepository
-import org.junit.After
+import kz.mitu.bookshelf.data.repository.FakeBookRepository
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -22,17 +21,13 @@ class HomeViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    private lateinit var repository: FakeBookRepository
     private lateinit var viewModel: HomeViewModel
 
     @Before
     fun setUp() {
-        BookRepository.reset()
-        viewModel = HomeViewModel()
-    }
-
-    @After
-    fun tearDown() {
-        BookRepository.reset()
+        repository = FakeBookRepository()
+        viewModel = HomeViewModel(repository)
     }
 
     @Test
@@ -40,7 +35,7 @@ class HomeViewModelTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
         val state = viewModel.uiState.value
-        assertEquals(BookRepository.books.value.reversed(), state.books)
+        assertEquals(repository.currentBooks.reversed(), state.books)
         assertEquals("", state.query)
         assertNull(state.selectedStatus)
         assertEquals(SortOption.RECENTLY_ADDED, state.selectedSort)
@@ -94,7 +89,7 @@ class HomeViewModelTest {
         viewModel.onStatusFilterChange(BookStatus.READING)
         viewModel.onStatusFilterChange(null)
 
-        assertEquals(BookRepository.books.value.size, viewModel.uiState.value.books.size)
+        assertEquals(repository.currentBooks.size, viewModel.uiState.value.books.size)
     }
 
     @Test
@@ -112,7 +107,7 @@ class HomeViewModelTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
         viewModel.onStatusFilterChange(BookStatus.READING)
 
-        BookRepository.updateStatus(6, BookStatus.READING)
+        repository.updateStatus(6, BookStatus.READING)
 
         assertEquals(setOf(2, 6), viewModel.uiState.value.books.map { it.id }.toSet())
     }
@@ -137,7 +132,7 @@ class HomeViewModelTest {
     @Test
     fun sortByTitle_ignoresCase() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
-        BookRepository.addBook(newBook(title = "apple"))
+        repository.addBook(newBook(title = "apple"))
 
         viewModel.onSortChange(SortOption.TITLE)
 
@@ -161,7 +156,7 @@ class HomeViewModelTest {
         viewModel.onSortChange(SortOption.TITLE)
 
         viewModel.onSortChange(SortOption.RECENTLY_ADDED)
-        BookRepository.addBook(newBook(title = "Newest"))
+        repository.addBook(newBook(title = "Newest"))
 
         assertEquals(SortOption.RECENTLY_ADDED, viewModel.uiState.value.selectedSort)
         assertEquals(listOf(7, 6, 5, 4, 3, 2, 1), ids())
@@ -202,9 +197,9 @@ class HomeViewModelTest {
     fun genres_updateWhenRepositoryChanges_andSkipBlank() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
-        BookRepository.addBook(newBook(title = "A").copy(genre = "Adventure"))
-        BookRepository.addBook(newBook(title = "B").copy(genre = "  "))
-        BookRepository.deleteBook(5)
+        repository.addBook(newBook(title = "A").copy(genre = "Adventure"))
+        repository.addBook(newBook(title = "B").copy(genre = "  "))
+        repository.deleteBook(5)
 
         assertEquals(
             listOf("Adventure", "Dystopia", "Historical novel", "Philosophy", "Psychological novel"),

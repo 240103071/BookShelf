@@ -1,6 +1,10 @@
 package kz.mitu.bookshelf.ui.screens.stats
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -9,6 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
 import kz.mitu.bookshelf.BookShelfApp
+import kz.mitu.bookshelf.data.repository.BookRepository
 
 data class StatsUiState(
     val totalBooks: Int = 0,
@@ -17,9 +22,9 @@ data class StatsUiState(
     val averageRating: Float = 0f
 )
 
-class StatsViewModel : ViewModel() {
-    private val repository = BookShelfApp.instance.bookRepository
-
+class StatsViewModel(
+    private val repository: BookRepository
+) : ViewModel() {
     val uiState: StateFlow<StatsUiState> = repository.books
         .map(::toStats)
         .stateIn(
@@ -38,5 +43,14 @@ class StatsViewModel : ViewModel() {
             pagesRead = books.filter { it.status == BookStatus.FINISHED }.sumOf { it.pages },
             averageRating = if (ratings.isEmpty()) 0f else ratings.average().toFloat()
         )
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = this[APPLICATION_KEY] as BookShelfApp
+                StatsViewModel(app.bookRepository)
+            }
+        }
     }
 }

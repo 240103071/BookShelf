@@ -2,6 +2,11 @@ package kz.mitu.bookshelf.ui.screens.add
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +17,7 @@ import kotlinx.coroutines.launch
 import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
 import kz.mitu.bookshelf.BookShelfApp
+import kz.mitu.bookshelf.data.repository.BookRepository
 import kz.mitu.bookshelf.navigation.Screen
 
 data class AddEditUiState(
@@ -28,10 +34,11 @@ data class AddEditUiState(
     val pagesError: Boolean = false
 )
 
-class AddEditBookViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+class AddEditBookViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val repository: BookRepository
+) : ViewModel() {
     private val bookId: Int? = savedStateHandle[Screen.ARG_BOOK_ID]
-
-    private val repository = BookShelfApp.instance.bookRepository
 
     private val _uiState = MutableStateFlow(AddEditUiState(isEditMode = bookId != null))
     val uiState: StateFlow<AddEditUiState> = _uiState.asStateFlow()
@@ -104,5 +111,14 @@ class AddEditBookViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
             if (state.isEditMode) repository.updateBook(book) else repository.addBook(book)
         }
         return true
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = this[APPLICATION_KEY] as BookShelfApp
+                AddEditBookViewModel(createSavedStateHandle(), app.bookRepository)
+            }
+        }
     }
 }

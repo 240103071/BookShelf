@@ -3,9 +3,8 @@ package kz.mitu.bookshelf.ui.screens.add
 import androidx.lifecycle.SavedStateHandle
 import kz.mitu.bookshelf.MainDispatcherRule
 import kz.mitu.bookshelf.data.model.BookStatus
-import kz.mitu.bookshelf.data.repository.BookRepository
+import kz.mitu.bookshelf.data.repository.FakeBookRepository
 import kz.mitu.bookshelf.navigation.Screen
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -17,19 +16,15 @@ class AddEditBookViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    private lateinit var repository: FakeBookRepository
     private lateinit var viewModel: AddEditBookViewModel
 
     private val state get() = viewModel.uiState.value
 
     @Before
     fun setUp() {
-        BookRepository.reset()
-        viewModel = AddEditBookViewModel(SavedStateHandle())
-    }
-
-    @After
-    fun tearDown() {
-        BookRepository.reset()
+        repository = FakeBookRepository()
+        viewModel = AddEditBookViewModel(SavedStateHandle(), repository)
     }
 
     private fun fillValidForm() {
@@ -50,14 +45,14 @@ class AddEditBookViewModelTest {
 
     @Test
     fun save_withEmptyForm_setsAllErrors_andDoesNotSave() {
-        val sizeBefore = BookRepository.books.value.size
+        val sizeBefore = repository.currentBooks.size
 
         assertFalse(viewModel.save())
 
         assertTrue(state.titleError)
         assertTrue(state.authorError)
         assertTrue(state.pagesError)
-        assertEquals(sizeBefore, BookRepository.books.value.size)
+        assertEquals(sizeBefore, repository.currentBooks.size)
     }
 
     @Test
@@ -110,13 +105,13 @@ class AddEditBookViewModelTest {
 
     @Test
     fun save_withValidForm_addsBook() {
-        val sizeBefore = BookRepository.books.value.size
-        val maxIdBefore = BookRepository.books.value.maxOf { it.id }
+        val sizeBefore = repository.currentBooks.size
+        val maxIdBefore = repository.currentBooks.maxOf { it.id }
         fillValidForm()
 
         assertTrue(viewModel.save())
 
-        val books = BookRepository.books.value
+        val books = repository.currentBooks
         assertEquals(sizeBefore + 1, books.size)
         val added = books.last()
         assertEquals(maxIdBefore + 1, added.id)
@@ -131,8 +126,8 @@ class AddEditBookViewModelTest {
 
     @Test
     fun editMode_loadsBook_andSaveUpdatesIt() {
-        viewModel = AddEditBookViewModel(SavedStateHandle(mapOf(Screen.ARG_BOOK_ID to 4)))
-        val sizeBefore = BookRepository.books.value.size
+        viewModel = AddEditBookViewModel(SavedStateHandle(mapOf(Screen.ARG_BOOK_ID to 4)), repository)
+        val sizeBefore = repository.currentBooks.size
 
         assertTrue(state.isEditMode)
         assertEquals("1984", state.title)
@@ -141,7 +136,7 @@ class AddEditBookViewModelTest {
         viewModel.onTitleChange("Nineteen Eighty-Four")
         assertTrue(viewModel.save())
 
-        val books = BookRepository.books.value
+        val books = repository.currentBooks
         assertEquals(sizeBefore, books.size)
         assertEquals("Nineteen Eighty-Four", books.first { it.id == 4 }.title)
     }

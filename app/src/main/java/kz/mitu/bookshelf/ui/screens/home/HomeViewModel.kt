@@ -1,6 +1,10 @@
 package kz.mitu.bookshelf.ui.screens.home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -11,6 +15,7 @@ import kz.mitu.bookshelf.data.model.Book
 import kz.mitu.bookshelf.data.model.BookStatus
 import kz.mitu.bookshelf.data.model.SortOption
 import kz.mitu.bookshelf.BookShelfApp
+import kz.mitu.bookshelf.data.repository.BookRepository
 
 data class HomeUiState(
     val books: List<Book> = emptyList(),
@@ -21,9 +26,9 @@ data class HomeUiState(
     val genres: List<String> = emptyList()
 )
 
-class HomeViewModel : ViewModel() {
-    private val repository = BookShelfApp.instance.bookRepository
-
+class HomeViewModel(
+    private val repository: BookRepository
+) : ViewModel() {
     private val query = MutableStateFlow("")
     private val selectedStatus = MutableStateFlow<BookStatus?>(null)
     private val selectedSort = MutableStateFlow(SortOption.RECENTLY_ADDED)
@@ -92,5 +97,14 @@ class HomeViewModel : ViewModel() {
         SortOption.RATING -> compareByDescending<Book> { it.rating }
             .thenBy(String.CASE_INSENSITIVE_ORDER) { it.title }
         SortOption.RECENTLY_ADDED -> compareByDescending { it.id }
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = this[APPLICATION_KEY] as BookShelfApp
+                HomeViewModel(app.bookRepository)
+            }
+        }
     }
 }

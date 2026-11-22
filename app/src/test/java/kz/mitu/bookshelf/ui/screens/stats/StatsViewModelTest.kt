@@ -6,8 +6,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kz.mitu.bookshelf.MainDispatcherRule
 import kz.mitu.bookshelf.data.model.BookStatus
-import kz.mitu.bookshelf.data.repository.BookRepository
-import org.junit.After
+import kz.mitu.bookshelf.data.repository.FakeBookRepository
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -18,17 +17,13 @@ class StatsViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    private lateinit var repository: FakeBookRepository
     private lateinit var viewModel: StatsViewModel
 
     @Before
     fun setUp() {
-        BookRepository.reset()
-        viewModel = StatsViewModel()
-    }
-
-    @After
-    fun tearDown() {
-        BookRepository.reset()
+        repository = FakeBookRepository()
+        viewModel = StatsViewModel(repository)
     }
 
     @Test
@@ -53,8 +48,8 @@ class StatsViewModelTest {
     fun stats_updateWhenRepositoryChanges() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
-        BookRepository.updateStatus(2, BookStatus.FINISHED)
-        BookRepository.deleteBook(4)
+        repository.updateStatus(2, BookStatus.FINISHED)
+        repository.deleteBook(4)
 
         val state = viewModel.uiState.value
         assertEquals(5, state.totalBooks)
@@ -68,7 +63,7 @@ class StatsViewModelTest {
     fun noBooks_giveZeroStats() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
-        BookRepository.books.value.map { it.id }.forEach(BookRepository::deleteBook)
+        repository.currentBooks.map { it.id }.forEach { repository.deleteBook(it) }
 
         val state = viewModel.uiState.value
         assertEquals(0, state.totalBooks)

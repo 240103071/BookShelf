@@ -31,7 +31,7 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(Screen.Home.route) {
-            val viewModel: HomeViewModel = viewModel()
+            val viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
             HomeScreen(
@@ -56,7 +56,7 @@ fun AppNavHost(
             route = Screen.Detail.route,
             arguments = listOf(navArgument(Screen.ARG_BOOK_ID) { type = NavType.IntType })
         ) {
-            val viewModel: DetailViewModel = viewModel()
+            val viewModel: DetailViewModel = viewModel(factory = DetailViewModel.Factory)
             val book by viewModel.book.collectAsStateWithLifecycle()
 
             BookDetailScreen(
@@ -86,7 +86,7 @@ fun AppNavHost(
         }
 
         composable(Screen.Stats.route) {
-            val viewModel: StatsViewModel = viewModel()
+            val viewModel: StatsViewModel = viewModel(factory = StatsViewModel.Factory)
             val stats by viewModel.uiState.collectAsStateWithLifecycle()
 
             StatsScreen(
@@ -102,7 +102,7 @@ fun AppNavHost(
 
 @Composable
 private fun AddEditDestination(onDone: () -> Unit) {
-    val viewModel: AddEditBookViewModel = viewModel()
+    val viewModel: AddEditBookViewModel = viewModel(factory = AddEditBookViewModel.Factory)
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     AddEditBookScreen(

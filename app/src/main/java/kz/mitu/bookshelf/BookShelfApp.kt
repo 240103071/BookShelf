@@ -20,7 +20,6 @@ class BookShelfApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
         seedDatabaseIfEmpty()
     }
 
@@ -31,10 +30,5 @@ class BookShelfApp : Application() {
                 dao.insertAll(sampleBooks.map { it.copy(id = 0).toEntity() })
             }
         }
-    }
-
-    companion object {
-        lateinit var instance: BookShelfApp
-            private set
     }
 }
