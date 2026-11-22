@@ -17,6 +17,8 @@ import kz.mitu.bookshelf.ui.screens.detail.BookDetailScreen
 import kz.mitu.bookshelf.ui.screens.detail.DetailViewModel
 import kz.mitu.bookshelf.ui.screens.home.HomeScreen
 import kz.mitu.bookshelf.ui.screens.home.HomeViewModel
+import kz.mitu.bookshelf.ui.screens.settings.SettingsScreen
+import kz.mitu.bookshelf.ui.screens.settings.SettingsViewModel
 import kz.mitu.bookshelf.ui.screens.stats.StatsScreen
 import kz.mitu.bookshelf.ui.screens.stats.StatsViewModel
 
@@ -48,7 +50,8 @@ fun AppNavHost(
                 onClearFilters = viewModel::clearFilters,
                 onBookClick = { bookId -> navController.navigate(Screen.Detail.createRoute(bookId)) },
                 onAddClick = { navController.navigate(Screen.Add.route) },
-                onStatsClick = { navController.navigate(Screen.Stats.route) }
+                onStatsClick = { navController.navigate(Screen.Stats.route) },
+                onSettingsClick = { navController.navigate(Screen.Settings.route) }
             )
         }
 
@@ -94,6 +97,19 @@ fun AppNavHost(
                 countByStatus = stats.countByStatus,
                 pagesRead = stats.pagesRead,
                 averageRating = stats.averageRating,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Settings.route) {
+            val viewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+            SettingsScreen(
+                darkTheme = state.darkTheme,
+                sortOption = state.sortOption,
+                onDarkThemeChange = viewModel::onDarkThemeChange,
+                onSortOptionChange = viewModel::onSortOptionChange,
                 onBackClick = { navController.popBackStack() }
             )
         }

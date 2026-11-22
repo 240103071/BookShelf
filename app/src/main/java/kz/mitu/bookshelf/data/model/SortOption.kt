@@ -1,9 +1,12 @@
 package kz.mitu.bookshelf.data.model
 
-enum class SortOption {
-    TITLE,
+import androidx.annotation.StringRes
+import kz.mitu.bookshelf.R
 
-    RATING,
+enum class SortOption(@StringRes val labelRes: Int) {
+    TITLE(R.string.sort_title),
 
-    RECENTLY_ADDED
+    RATING(R.string.sort_rating),
+
+    RECENTLY_ADDED(R.string.sort_recent)
 }

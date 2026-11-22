@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -58,6 +59,7 @@ fun HomeScreen(
     onBookClick: (Int) -> Unit,
     onAddClick: () -> Unit,
     onStatsClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var sortMenuOpen by remember { mutableStateOf(false) }
@@ -103,6 +105,12 @@ fun HomeScreen(
                                 )
                             }
                         }
+                    }
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = stringResource(R.string.settings)
+                        )
                     }
                 }
             )
@@ -183,13 +191,6 @@ fun HomeScreen(
     }
 }
 
-private val SortOption.labelRes: Int
-    get() = when (this) {
-        SortOption.TITLE -> R.string.sort_title
-        SortOption.RATING -> R.string.sort_rating
-        SortOption.RECENTLY_ADDED -> R.string.sort_recent
-    }
-
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
@@ -219,7 +220,8 @@ private fun HomeScreenPreview() {
             onClearFilters = {},
             onBookClick = {},
             onAddClick = {},
-            onStatsClick = {}
+            onStatsClick = {},
+            onSettingsClick = {}
         )
     }
 }
