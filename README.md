@@ -8,7 +8,7 @@ Built with **Kotlin** and **Jetpack Compose**, using the **MVVM** architecture.
 
 | Name | Responsibility |
 |---|---|
-| Dinislam Kadyr | Data layer (Book model, BookRepository), ViewModels, navigation routes, unit tests |
+| Dinislam Kadyr | Data layer (Book model, BookRepository), ViewModels, navigation routes, unit tests. Local storage with Room and DataStore, Settings screen |
 | Adilzhan Baktybayev | UI layer: theme, reusable components, all screens, connecting screens to ViewModels and navigation. Online book search with Retrofit (Open Library API) |
 
 ## Main features
@@ -19,7 +19,8 @@ Built with **Kotlin** and **Jetpack Compose**, using the **MVVM** architecture.
 - **Book details**: change reading status, rate with stars, delete with confirmation
 - **Add and edit** books with form validation
 - **Statistics**: total books, books per status, pages read, average rating
-- Light and dark theme
+- Light and dark theme, saved in **Settings**
+- Books and settings are **saved on the device** and stay after the app is closed
 - **Find books online** (Open Library API) and add them to your library
 
 ## Architecture (MVVM)
@@ -27,17 +28,26 @@ Built with **Kotlin** and **Jetpack Compose**, using the **MVVM** architecture.
 ```
 data/
   model/        Book, BookStatus, SortOption
-  repository/   BookRepository (in-memory, StateFlow)
+  local/        BookEntity, BookDao, BookDatabase (Room)
+  repository/   BookRepository (interface), RoomBookRepository
+  settings/     SettingsRepository (DataStore)
 ui/
   theme/        colors, typography, shapes
   components/   reusable composables (BookCard, BookCover, RatingBar, SearchField, ...)
-  screens/      home, detail, add (add/edit), stats: Screen + ViewModel for each
+  screens/      home, detail, add (add/edit), stats, settings, online: Screen + ViewModel for each
 navigation/     Screen (routes), AppNavHost (NavHost)
 ```
 
-- **Model**: `BookRepository` keeps the books in a `MutableStateFlow` and exposes a read-only `StateFlow`.
+- **Model**: `BookRepository` reads and writes books in the Room database and exposes them as a `Flow`.
 - **ViewModel**: each screen has a ViewModel that turns repository data into UI state (`StateFlow`) and handles user actions.
 - **View**: screens are stateless composables. They receive state as parameters and send events back through callbacks. `AppNavHost` connects each screen to its ViewModel.
+
+## Local storage (Room and DataStore)
+
+- **Room**: `BookEntity` is the `books` table, `BookDao` has the CRUD queries, `BookDatabase` creates the database.
+- **CRUD**: add a book (Create), list and details (Read), edit and change status or rating (Update), delete (Delete).
+- `RoomBookRepository` implements `BookRepository`; ViewModels observe `Flow` from Room, so the UI updates automatically.
+- **DataStore** saves the theme (light / dark / system) and the sort option. Both stay after restarting the app.
 
 ## Online search (REST API)
 
