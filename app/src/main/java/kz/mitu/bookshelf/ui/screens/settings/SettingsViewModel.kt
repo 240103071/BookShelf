@@ -17,7 +17,6 @@ import kz.mitu.bookshelf.data.repository.BookRepository
 import kz.mitu.bookshelf.data.settings.SettingsRepository
 
 data class SettingsUiState(
-    /** null — follow the system theme. */
     val darkTheme: Boolean? = null,
     val sortOption: SortOption = SortOption.RECENTLY_ADDED,
     val bookCount: Int = 0

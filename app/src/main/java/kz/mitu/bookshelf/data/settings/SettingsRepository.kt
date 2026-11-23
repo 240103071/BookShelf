@@ -14,7 +14,6 @@ import kz.mitu.bookshelf.data.model.SortOption
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 interface SettingsRepository {
-    /** null — follow the system theme. */
     val darkTheme: Flow<Boolean?>
 
     val sortOption: Flow<SortOption>
