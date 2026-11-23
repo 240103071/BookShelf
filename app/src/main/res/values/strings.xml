@@ -71,6 +71,7 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="settings_default_sort">Default sorting</string>
+    <string name="settings_reset">Reset to defaults</string>
 
     <!-- Online search -->
     <string name="add_to_library">Add to library</string>

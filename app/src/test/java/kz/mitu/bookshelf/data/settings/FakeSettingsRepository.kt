@@ -24,4 +24,9 @@ class FakeSettingsRepository(
     override suspend fun setSortOption(sortOption: SortOption) {
         _sortOption.value = sortOption
     }
+
+    override suspend fun resetSettings() {
+        _darkTheme.value = null
+        _sortOption.value = SortOption.RECENTLY_ADDED
+    }
 }

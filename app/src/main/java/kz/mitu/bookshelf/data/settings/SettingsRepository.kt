@@ -22,6 +22,8 @@ interface SettingsRepository {
     suspend fun setDarkTheme(darkTheme: Boolean?)
 
     suspend fun setSortOption(sortOption: SortOption)
+
+    suspend fun resetSettings()
 }
 
 class DataStoreSettingsRepository(context: Context) : SettingsRepository {
@@ -44,6 +46,10 @@ class DataStoreSettingsRepository(context: Context) : SettingsRepository {
 
     override suspend fun setSortOption(sortOption: SortOption) {
         dataStore.edit { prefs -> prefs[SORT_OPTION] = sortOption.name }
+    }
+
+    override suspend fun resetSettings() {
+        dataStore.edit { prefs -> prefs.clear() }
     }
 
     private companion object {

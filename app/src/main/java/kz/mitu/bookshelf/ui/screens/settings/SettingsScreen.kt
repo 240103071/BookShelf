@@ -12,6 +12,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,6 +40,7 @@ fun SettingsScreen(
     sortOption: SortOption,
     onDarkThemeChange: (Boolean?) -> Unit,
     onSortOptionChange: (SortOption) -> Unit,
+    onResetClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -81,6 +83,17 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            OutlinedButton(
+                onClick = onResetClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text(text = stringResource(R.string.settings_reset))
+            }
         }
     }
 }
@@ -122,6 +135,7 @@ private fun SettingsScreenPreview() {
             sortOption = SortOption.RECENTLY_ADDED,
             onDarkThemeChange = {},
             onSortOptionChange = {},
+            onResetClick = {},
             onBackClick = {}
         )
     }

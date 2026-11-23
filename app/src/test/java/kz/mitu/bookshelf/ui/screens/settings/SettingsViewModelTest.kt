@@ -65,4 +65,18 @@ class SettingsViewModelTest {
         assertEquals(SortOption.TITLE, repository.currentSortOption)
         assertEquals(SortOption.TITLE, viewModel.uiState.value.sortOption)
     }
+
+    @Test
+    fun resetSettings_restoresDefaults() = runTest {
+        val repository = FakeSettingsRepository(darkTheme = true, sortOption = SortOption.TITLE)
+        val viewModel = SettingsViewModel(repository)
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+
+        viewModel.onResetSettings()
+
+        assertNull(repository.currentDarkTheme)
+        assertEquals(SortOption.RECENTLY_ADDED, repository.currentSortOption)
+        assertNull(viewModel.uiState.value.darkTheme)
+        assertEquals(SortOption.RECENTLY_ADDED, viewModel.uiState.value.sortOption)
+    }
 }

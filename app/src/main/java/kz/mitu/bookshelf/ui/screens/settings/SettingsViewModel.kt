@@ -43,6 +43,10 @@ class SettingsViewModel(
         viewModelScope.launch { settingsRepository.setSortOption(sortOption) }
     }
 
+    fun onResetSettings() {
+        viewModelScope.launch { settingsRepository.resetSettings() }
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {

@@ -129,6 +129,7 @@ fun AppNavHost(
                 sortOption = state.sortOption,
                 onDarkThemeChange = viewModel::onDarkThemeChange,
                 onSortOptionChange = viewModel::onSortOptionChange,
+                onResetClick = viewModel::onResetSettings,
                 onBackClick = { navController.popBackStack() }
             )
         }
