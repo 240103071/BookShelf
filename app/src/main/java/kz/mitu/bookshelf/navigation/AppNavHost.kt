@@ -127,6 +127,7 @@ fun AppNavHost(
             SettingsScreen(
                 darkTheme = state.darkTheme,
                 sortOption = state.sortOption,
+                bookCount = state.bookCount,
                 onDarkThemeChange = viewModel::onDarkThemeChange,
                 onSortOptionChange = viewModel::onSortOptionChange,
                 onResetClick = viewModel::onResetSettings,

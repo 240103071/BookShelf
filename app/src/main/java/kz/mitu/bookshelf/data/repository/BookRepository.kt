@@ -7,6 +7,8 @@ import kz.mitu.bookshelf.data.model.BookStatus
 interface BookRepository {
     val books: Flow<List<Book>>
 
+    val bookCount: Flow<Int>
+
     fun getBook(id: Int): Flow<Book?>
 
     suspend fun addBook(book: Book): Int

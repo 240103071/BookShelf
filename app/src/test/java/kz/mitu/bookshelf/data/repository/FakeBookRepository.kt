@@ -12,6 +12,8 @@ class FakeBookRepository(initialBooks: List<Book> = sampleBooks) : BookRepositor
     private val _books = MutableStateFlow(initialBooks)
     override val books: Flow<List<Book>> = _books
 
+    override val bookCount: Flow<Int> = _books.map { it.size }
+
     val currentBooks: List<Book> get() = _books.value
 
     override fun getBook(id: Int): Flow<Book?> =

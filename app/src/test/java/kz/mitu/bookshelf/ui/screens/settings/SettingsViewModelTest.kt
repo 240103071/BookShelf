@@ -6,6 +6,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kz.mitu.bookshelf.MainDispatcherRule
 import kz.mitu.bookshelf.data.model.SortOption
+import kz.mitu.bookshelf.data.repository.FakeBookRepository
 import kz.mitu.bookshelf.data.settings.FakeSettingsRepository
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -19,7 +20,7 @@ class SettingsViewModelTest {
 
     @Test
     fun initialState_followsSystemTheme_andRecentlyAddedSort() = runTest {
-        val viewModel = SettingsViewModel(FakeSettingsRepository())
+        val viewModel = SettingsViewModel(FakeSettingsRepository(), FakeBookRepository())
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
         assertNull(viewModel.uiState.value.darkTheme)
@@ -29,7 +30,7 @@ class SettingsViewModelTest {
     @Test
     fun savedSettings_areShown() = runTest {
         val repository = FakeSettingsRepository(darkTheme = true, sortOption = SortOption.RATING)
-        val viewModel = SettingsViewModel(repository)
+        val viewModel = SettingsViewModel(repository, FakeBookRepository())
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
         assertEquals(true, viewModel.uiState.value.darkTheme)
@@ -39,7 +40,7 @@ class SettingsViewModelTest {
     @Test
     fun darkThemeChange_isSavedAndShown() = runTest {
         val repository = FakeSettingsRepository()
-        val viewModel = SettingsViewModel(repository)
+        val viewModel = SettingsViewModel(repository, FakeBookRepository())
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
         viewModel.onDarkThemeChange(false)
@@ -57,7 +58,7 @@ class SettingsViewModelTest {
     @Test
     fun sortOptionChange_isSavedAndShown() = runTest {
         val repository = FakeSettingsRepository()
-        val viewModel = SettingsViewModel(repository)
+        val viewModel = SettingsViewModel(repository, FakeBookRepository())
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
         viewModel.onSortOptionChange(SortOption.TITLE)
@@ -69,7 +70,7 @@ class SettingsViewModelTest {
     @Test
     fun resetSettings_restoresDefaults() = runTest {
         val repository = FakeSettingsRepository(darkTheme = true, sortOption = SortOption.TITLE)
-        val viewModel = SettingsViewModel(repository)
+        val viewModel = SettingsViewModel(repository, FakeBookRepository())
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
 
         viewModel.onResetSettings()
@@ -78,5 +79,18 @@ class SettingsViewModelTest {
         assertEquals(SortOption.RECENTLY_ADDED, repository.currentSortOption)
         assertNull(viewModel.uiState.value.darkTheme)
         assertEquals(SortOption.RECENTLY_ADDED, viewModel.uiState.value.sortOption)
+    }
+
+    @Test
+    fun bookCount_updatesWhenLibraryChanges() = runTest {
+        val bookRepository = FakeBookRepository()
+        val viewModel = SettingsViewModel(FakeSettingsRepository(), bookRepository)
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect {} }
+
+        assertEquals(6, viewModel.uiState.value.bookCount)
+
+        bookRepository.deleteBook(1)
+
+        assertEquals(5, viewModel.uiState.value.bookCount)
     }
 }

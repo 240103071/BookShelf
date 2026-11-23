@@ -12,6 +12,8 @@ class RoomBookRepository(private val bookDao: BookDao) : BookRepository {
     override val books: Flow<List<Book>> =
         bookDao.getAll().map { entities -> entities.map { it.toBook() } }
 
+    override val bookCount: Flow<Int> = bookDao.observeCount()
+
     override fun getBook(id: Int): Flow<Book?> =
         bookDao.getById(id).map { it?.toBook() }
 

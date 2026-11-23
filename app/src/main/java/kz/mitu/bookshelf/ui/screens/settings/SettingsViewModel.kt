@@ -13,22 +13,26 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kz.mitu.bookshelf.BookShelfApp
 import kz.mitu.bookshelf.data.model.SortOption
+import kz.mitu.bookshelf.data.repository.BookRepository
 import kz.mitu.bookshelf.data.settings.SettingsRepository
 
 data class SettingsUiState(
     /** null — follow the system theme. */
     val darkTheme: Boolean? = null,
-    val sortOption: SortOption = SortOption.RECENTLY_ADDED
+    val sortOption: SortOption = SortOption.RECENTLY_ADDED,
+    val bookCount: Int = 0
 )
 
 class SettingsViewModel(
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    bookRepository: BookRepository
 ) : ViewModel() {
     val uiState: StateFlow<SettingsUiState> = combine(
         settingsRepository.darkTheme,
-        settingsRepository.sortOption
-    ) { darkTheme, sortOption ->
-        SettingsUiState(darkTheme = darkTheme, sortOption = sortOption)
+        settingsRepository.sortOption,
+        bookRepository.bookCount
+    ) { darkTheme, sortOption, bookCount ->
+        SettingsUiState(darkTheme = darkTheme, sortOption = sortOption, bookCount = bookCount)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -51,7 +55,7 @@ class SettingsViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as BookShelfApp
-                SettingsViewModel(app.settingsRepository)
+                SettingsViewModel(app.settingsRepository, app.bookRepository)
             }
         }
     }

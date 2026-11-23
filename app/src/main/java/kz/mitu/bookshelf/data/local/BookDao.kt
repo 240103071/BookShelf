@@ -32,4 +32,7 @@ interface BookDao {
 
     @Query("SELECT COUNT(*) FROM books")
     suspend fun count(): Int
+
+    @Query("SELECT COUNT(*) FROM books")
+    fun observeCount(): Flow<Int>
 }

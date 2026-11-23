@@ -38,6 +38,7 @@ private enum class ThemeChoice(@StringRes val labelRes: Int, val darkTheme: Bool
 fun SettingsScreen(
     darkTheme: Boolean?,
     sortOption: SortOption,
+    bookCount: Int,
     onDarkThemeChange: (Boolean?) -> Unit,
     onSortOptionChange: (SortOption) -> Unit,
     onResetClick: () -> Unit,
@@ -83,6 +84,15 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            SectionTitle(text = stringResource(R.string.settings_library))
+            Text(
+                text = stringResource(R.string.settings_book_count, bookCount),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
@@ -133,6 +143,7 @@ private fun SettingsScreenPreview() {
         SettingsScreen(
             darkTheme = null,
             sortOption = SortOption.RECENTLY_ADDED,
+            bookCount = 6,
             onDarkThemeChange = {},
             onSortOptionChange = {},
             onResetClick = {},
